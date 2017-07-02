@@ -46,7 +46,7 @@ describe('Blog API', function() {
         res.body.should.include.keys('title', 'content', 'author');
         res.body.id.should.not.be.null;
 
-        res.body.should.deep.equal(Object.assign(newBlogPost, {res.body.id}));
+        res.body.should.deep.equal(Object.assign(newBlogPost, {id:res.body.id}));
       });
   });
 
@@ -84,5 +84,5 @@ describe('Blog API', function() {
         res.should.have.status(204);
       });
   });
-  
+
 });
