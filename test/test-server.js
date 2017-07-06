@@ -35,7 +35,7 @@ describe('Blog API', function() {
   });
 
   it('should add a blog post on POST', function() {
-    const newBlogPost = {title: 'Cool Posts Only', content: 'Unbelievable cool content', author: 'A Cool Person'};
+    const newBlogPost = {title: 'Cool Posts Only', content: 'Unbelievable cool content', author: 'A Cool Person', publishDate: 1499302999927 };
     return chai.request(app)
       .post('/blog-posts')
       .send(newBlogPost)
@@ -43,10 +43,10 @@ describe('Blog API', function() {
         res.should.have.status(201);
         res.should.be.json;
         res.body.should.be.a('object');
-        res.body.should.include.keys('title', 'content', 'author');
+        res.body.should.include.keys('title', 'content', 'author', 'publishDate');
         res.body.id.should.not.be.null;
 
-        res.body.should.deep.equal(Object.assign(newBlogPost, {id:res.body.id}));
+        res.body.should.deep.equal(Object.assign(newBlogPost, { id: res.body.id }));
       });
   });
 
@@ -58,27 +58,28 @@ describe('Blog API', function() {
     };
 
     return chai.request(app)
-      .get('/blog-posts/:id')
+      .get('/blog-posts/')
       .then(function(res) {
-        updateBlogPost.id = res.body[0].id;
+        updateBlogPost.id = res.body[0].id
         return chai.request(app)
-          .put(`/blog-posts/:id/${updateBlogPost.id}`)
-          .send(updateBlogPost);
+          .put(`/blog-posts/${updateBlogPost.id}`)
+          .send(updateBlogPost)
       })
       .then(function(res) {
         res.should.have.status(200);
         res.should.be.json;
         res.body.should.be.a('object');
+        delete res.body.publishDate;
         res.body.should.deep.equal(updateBlogPost);
       });
   });
 
   it('should delete blog posts on DELETE', function() {
     return chai.request(app)
-      .get('/blog-posts/:id')
+      .get('/blog-posts/')
       .then(function(res) {
         return chai.request(app)
-          .delete(`/blog-posts/:id/${res.body[0].id}`);
+          .delete(`/blog-posts/${res.body[0].id}`);
       })
       .then(function(res) {
         res.should.have.status(204);

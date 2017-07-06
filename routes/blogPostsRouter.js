@@ -30,7 +30,7 @@ router.post('/', jsonParser, (req, res) => {
     }
   }
 
-  const item = BlogPosts.create(req.body.title, req.body.content, req.body.author);
+  const item = BlogPosts.create(req.body.title, req.body.content, req.body.author, req.body.publishDate);
   res.status(201).json(item);
 });
 
@@ -53,19 +53,16 @@ router.put('/:id', jsonParser, (req, res) => {
   }
 
   if (req.params.id !== req.body.id) {
-    console.log('here');
     const message = `Request path id (${req.params.id}) and request body id (${req.body.id}) must match`;
-    console.error(message);
     return res.status(400).send(message);
   }
-  console.log(`Updating blog \`${req.params.id}\``);
-  BlogPosts.update({
-    //still not sure if we need publish date
-    title: req.params.title,
+  const updatedPost = BlogPosts.update({
+    id: req.params.id,
+    title: req.body.title,
     content: req.body.content,
     author: req.body.author
   });
-  res.status(204).end();
+  res.status(200).json(updatedPost);
 });
 
 // when DELETE request comes in with an id in path,
@@ -73,7 +70,6 @@ router.put('/:id', jsonParser, (req, res) => {
 
 router.delete('/:id', (req, res) => {
   BlogPosts.delete(req.params.id);
-  console.log(`Deleted blog post \`${req.params.ID}\``);
   res.status(204).end();
 });
 
