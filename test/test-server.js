@@ -18,16 +18,16 @@ describe('Blog API', function() {
 
   it('should list blog posts on GET', function() {
     return chai.request(app)
-    .get('/blog-posts')
+    .get('/posts')
     .then(function(res) {
       res.should.have.status(200);
       res.should.be.json;
-      res.body.should.be.a('array');
+      // res.body.blogs.should.be.a('array');
 
-      res.body.length.should.be.at.least(1);
+      res.body.blogs.length.should.be.at.least(1);
 
       const expectedKeys = ['title', 'content', 'author'];
-      res.body.forEach(function(item) {
+      res.body.blogs.forEach(function(item) {
         item.should.be.a('object');
         item.should.include.keys(expectedKeys);
       });
@@ -35,9 +35,16 @@ describe('Blog API', function() {
   });
 
   it('should add a blog post on POST', function() {
-    const newBlogPost = {title: 'Cool Posts Only', content: 'Unbelievable cool content', author: 'A Cool Person', publishDate: 1499302999927 };
+    const newBlogPost = {
+      title: 'Cool Posts Only',
+      content: 'Unbelievable cool content',
+      author: {
+        firstName: 'Yay',
+        lastName: 'Boo'
+      },
+      publishDate: 1499302999927 };
     return chai.request(app)
-      .post('/blog-posts')
+      .post('/posts')
       .send(newBlogPost)
       .then(function(res) {
         res.should.have.status(201);
@@ -58,11 +65,11 @@ describe('Blog API', function() {
     };
 
     return chai.request(app)
-      .get('/blog-posts/')
+      .get('/posts')
       .then(function(res) {
         updateBlogPost.id = res.body[0].id
         return chai.request(app)
-          .put(`/blog-posts/${updateBlogPost.id}`)
+          .put(`/posts/${updateBlogPost.id}`)
           .send(updateBlogPost)
       })
       .then(function(res) {
@@ -76,10 +83,10 @@ describe('Blog API', function() {
 
   it('should delete blog posts on DELETE', function() {
     return chai.request(app)
-      .get('/blog-posts/')
+      .get('/posts')
       .then(function(res) {
         return chai.request(app)
-          .delete(`/blog-posts/${res.body[0].id}`);
+          .delete(`/posts/${res.body[0].id}`);
       })
       .then(function(res) {
         res.should.have.status(204);

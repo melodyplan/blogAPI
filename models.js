@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const blogSchema = mongoose.Schema({
   title: {type: String, required: true},
   content: {type: String, required: true},
+  publishDate: {type: Date, default: Date.now()},
   author: {
     firstName: String,
     lastName: String
@@ -18,6 +19,7 @@ blogSchema.methods.apiRepr = function() {
     id: this._id,
     title: this.title,
     content: this.content,
+    publishDate: this.publishDate,
     author: this.authorName
   };
 }

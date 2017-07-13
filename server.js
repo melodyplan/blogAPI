@@ -15,10 +15,7 @@ app.get('/posts', (req, res) => {
     .find()
     .exec()
     .then(blogs => {
-      res.json({
-        blogs: blogs.map(
-          (blog) => blog.apiRepr())
-      });
+      res.json({ blogs: blogs.map((blog) => blog.apiRepr()) });
     })
     .catch(
       err => {
@@ -38,7 +35,7 @@ app.get('/posts/:id', (req, res) => {
     });
 });
 
-app.post('/post', (req, res) => {
+app.post('/posts', (req, res) => {
   const requiredFields = ['title', 'content', 'author'];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];
@@ -53,9 +50,10 @@ app.post('/post', (req, res) => {
     .create({
       title: req.body.title,
       content: req.body.content,
-      author: req.body.author})
+      author: req.body.author,
+      publishDate: req.body.publishDate})
     .then(
-      blog => res.status(200).json(blog.apiRepr()))
+      blog => res.status(201).json(blog.apiRepr()))
     .catch(err => {
       console.error(err);
       res.status(400).json({message: 'Bad request error'});
@@ -87,7 +85,7 @@ app.put('/posts/:id', (req, res) => {
     .catch(err => res.status(400).json({message: 'Bad request error'}));
 });
 
-app.delete('/restaurants/:id', (req, res) => {
+app.delete('/posts/:id', (req, res) => {
   Blog
     .findByIdAndRemove(req.params.id)
     .exec()
@@ -139,4 +137,4 @@ if (require.main === module) {
   runServer().catch(err => console.error(err));
 };
 
-module.exports = {ap, runServer, closeServer};
+module.exports = {app, runServer, closeServer};
