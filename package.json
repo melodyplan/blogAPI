@@ -5,7 +5,8 @@
   "main": "blogPostsRouter.js",
   "scripts": {
     "start": "node server.js",
-    "test": "nodemon --exec 'mocha'"
+    "test-dev": "nodemon --exec 'mocha'",
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
