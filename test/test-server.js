@@ -1,5 +1,6 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const moment = require('moment');
 
 const {app, runServer, closeServer} = require('../server');
 
@@ -42,7 +43,8 @@ describe('Blog API', function() {
         firstName: 'Yay',
         lastName: 'Boo'
       },
-      publishDate: 1499302999927 };
+      publishDate: 1499302999927
+    };
     return chai.request(app)
       .post('/posts')
       .send(newBlogPost)
@@ -52,8 +54,9 @@ describe('Blog API', function() {
         res.body.should.be.a('object');
         res.body.should.include.keys('title', 'content', 'author', 'publishDate');
         res.body.id.should.not.be.null;
-
-        res.body.should.deep.equal(Object.assign(newBlogPost, { id: res.body.id }));
+        res.body.title.should.equal(newBlogPost.title)
+        res.body.content.should.equal(newBlogPost.content)
+        res.body.author.should.equal(newBlogPost.author.firstName + ' ' + newBlogPost.author.lastName)
       });
   });
 
@@ -61,13 +64,16 @@ describe('Blog API', function() {
     const updateBlogPost = {
       title: 'An Open Letter to Nintendo',
       content: 'Will Yoshi get the recognition he deserves?',
-      author: 'Coalition Against Virtual Dinosaur Abuse'
+      author: {
+        firstName: 'Coalition Against',
+        lastName: 'Virtual Dinosaur Abuse'
+      }
     };
 
     return chai.request(app)
       .get('/posts')
       .then(function(res) {
-        updateBlogPost.id = res.body[0].id
+        updateBlogPost.id = res.body.blogs[0].id
         return chai.request(app)
           .put(`/posts/${updateBlogPost.id}`)
           .send(updateBlogPost)
@@ -77,7 +83,10 @@ describe('Blog API', function() {
         res.should.be.json;
         res.body.should.be.a('object');
         delete res.body.publishDate;
-        res.body.should.deep.equal(updateBlogPost);
+        res.body.id.should.equal(updateBlogPost.id)
+        res.body.title.should.equal(updateBlogPost.title)
+        res.body.content.should.equal(updateBlogPost.content)
+        res.body.author.should.equal(updateBlogPost.author.firstName + ' ' + updateBlogPost.author.lastName)
       });
   });
 
@@ -86,7 +95,7 @@ describe('Blog API', function() {
       .get('/posts')
       .then(function(res) {
         return chai.request(app)
-          .delete(`/posts/${res.body[0].id}`);
+          .delete(`/posts/${res.body.blogs[0].id}`);
       })
       .then(function(res) {
         res.should.have.status(204);

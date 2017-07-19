@@ -61,7 +61,7 @@ app.post('/posts', (req, res) => {
 });
 
 app.put('/posts/:id', (req, res) => {
-  if (!(req.parms.id && req.body.id && req.params.id === req.body.id)) {
+  if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
     const message = (
       `Request path id (${req.params.id}) and request body id ` +
       `(${req.body.id}) must match`);
@@ -70,7 +70,7 @@ app.put('/posts/:id', (req, res) => {
   }
 
   const toUpdate = {};
-  const updateableFields = ['name', 'content', 'author'];
+  const updateableFields = ['name', 'title', 'content', 'author'];
 
   updateableFields.forEach(field => {
     if (field in req.body) {
@@ -79,9 +79,9 @@ app.put('/posts/:id', (req, res) => {
   });
 
   Blog
-    .findByIdAndUpdate(req.params.id, {$set: toUpdate})
+    .findByIdAndUpdate(req.params.id, {$set: toUpdate}, {new: true})
     .exec()
-    .then(blog => res.status(200).end())
+    .then(blog => res.status(200).json(blog.apiRepr()))
     .catch(err => res.status(400).json({message: 'Bad request error'}));
 });
 
